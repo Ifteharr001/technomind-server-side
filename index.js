@@ -32,9 +32,45 @@ async function run() {
     const usersCollection = client.db("technoDb").collection("users")
 
 
+    // create shop api
+    app.post('/userShop', async(req, res) => {
+        const shop = req.body;
+        const result = await shopCollection.insertOne(shop);
+        res.send(result)
+    })
+    // app.get('/userShop', async(req, res) => {
+    //     const email = req.query.email;
+    //      if (!email) {
+    //        return res.status(400).send("Email parameter is missing");
+    //      }
+    //     const query = { ownerEmail: email };
+    //     const cursor = shopCollection.find(query);
+    //     const result = await cursor.toArray();
+    //     console.log(result);
+    //     res.send(result);
+    // })
+
+    app.get("/userShop", async (req, res) => {
+        const email = req.query.email;
+        if (email) {
+          const query = { ownerEmail: email };
+          const cursor = shopCollection.find(query);
+          const result = await cursor.toArray();
+          res.send(result);
+        } else {
+          const allData = await shopCollection.find({}).toArray();
+          res.send(allData);
+        }
+    });
+
     // user collection api
     app.post('/users', async(req, res) => {
         const user = req.body;
+        const query = {email: user.email}
+        const existingUser = await usersCollection.findOne(query);
+        if(existingUser){
+            return res.send({message: 'user already exist', insertedId: null })
+        }
         const result = await usersCollection.insertOne(user);
         res.send(result);
     })
