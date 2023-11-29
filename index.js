@@ -29,8 +29,28 @@ async function run() {
 
 
     const shopCollection = client.db("technoDb").collection("userShop");
-    const usersCollection = client.db("technoDb").collection("users")
+    const usersCollection = client.db("technoDb").collection("users");
+    const addProductsCollection = client.db("technoDb").collection("addProducts");
 
+
+    app.post('/addProducts', async(req, res) => {
+       const item = req.body;
+       const result = await addProductsCollection.insertOne(item);
+       res.send(result);
+    });
+
+    app.get('/addProducts', async(req, res) => {
+      const email = req.query.email;
+      if (email) {
+        const query = { email: email };
+        const cursor = addProductsCollection.find(query);
+        const result = await cursor.toArray();
+        res.send(result);
+      } else {
+        const allData = await shopCollection.find({}).toArray();
+        res.send(allData);
+      }
+    })
 
     // create shop api
     app.post('/userShop', async(req, res) => {
@@ -38,17 +58,6 @@ async function run() {
         const result = await shopCollection.insertOne(shop);
         res.send(result)
     })
-    // app.get('/userShop', async(req, res) => {
-    //     const email = req.query.email;
-    //      if (!email) {
-    //        return res.status(400).send("Email parameter is missing");
-    //      }
-    //     const query = { ownerEmail: email };
-    //     const cursor = shopCollection.find(query);
-    //     const result = await cursor.toArray();
-    //     console.log(result);
-    //     res.send(result);
-    // })
 
     app.get("/userShop", async (req, res) => {
         const email = req.query.email;
