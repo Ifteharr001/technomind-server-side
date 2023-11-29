@@ -11,7 +11,7 @@ app.use(express.json());
 
 //MONGODB SERVER CODE
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.kwgfltq.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -50,6 +50,13 @@ async function run() {
         const allData = await shopCollection.find({}).toArray();
         res.send(allData);
       }
+    });
+
+    app.delete('/addProducts/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await addProductsCollection.deleteOne(query);
+      res.send(result);
     })
 
     // create shop api
