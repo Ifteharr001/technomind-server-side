@@ -52,6 +52,33 @@ async function run() {
       }
     });
 
+    app.patch('/addProducts/:id', async(req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const updatedDoc = {
+        $set: {
+          name: item.name,
+          image: item.image,
+          quantity: parseFloat(item.quantity),
+          location: item.location,
+          cost: parseFloat(item.cost),
+          profit: parseFloat(item.profit),
+          discount: parseFloat(item.discount),
+          description: item.description,
+        },
+      };
+      const result = await addProductsCollection.updateOne(filter, updatedDoc)
+      res.send(result)
+    })
+
+    app.get('/addProducts/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await addProductsCollection.findOne(query);
+      res.send(result);
+    })
+
     app.delete('/addProducts/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
