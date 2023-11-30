@@ -31,13 +31,21 @@ async function run() {
     const shopCollection = client.db("technoDb").collection("userShop");
     const usersCollection = client.db("technoDb").collection("users");
     const addProductsCollection = client.db("technoDb").collection("addProducts");
+    const checkOutProductsCollection = client.db("technoDb").collection("checkOut");
 
+
+   
 
     app.post('/addProducts', async(req, res) => {
        const item = req.body;
        const result = await addProductsCollection.insertOne(item);
        res.send(result);
     });
+
+ app.post("/checkOut", async (req, res) => {
+   
+ });
+
 
     app.get('/addProducts', async(req, res) => {
       const email = req.query.email;
@@ -116,6 +124,22 @@ async function run() {
         }
         const result = await usersCollection.insertOne(user);
         res.send(result);
+    });
+    app.get('/users', async(req, res) => {
+      const cursor = usersCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.patch('/users/admin/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          role: 'admin'
+        }
+      }
+      const result = await usersCollection.updateOne(filter, updateDoc)
+      res.send(result);
     })
 
     // await client.connect();
